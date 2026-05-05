@@ -10,8 +10,15 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import AccountOptionsSheet from '../../components/bottomsheet/accountsBottomSheet';
+import AirtimePurchaseSheet from '../../components/bottomsheet/buyAirtime';
+import LoansOptionSheet from '../../components/bottomsheet/loansBottomSheet';
+import MTransferSheet from '../../components/bottomsheet/mobileMoneyTransfer';
+import PayBillSheet from '../../components/bottomsheet/payBill';
+import SendMoneySheet from '../../components/bottomsheet/sendMoney';
+import SharesManagementSheet from '../../components/bottomsheet/sharesManagement';
 import BankAccountCard from '../../components/cards/bankAccountCards';
-
+import ProfileDrawer from '../../components/drawer/menu';
 const transactions = [
   { id: 1, name: 'John Kamau', amount: 1500, type: 'out', date: 'Today, 10:32 AM' },
   { id: 2, name: 'Mary Wanjiku', amount: 3000, type: 'in', date: 'Today, 08:15 AM' },
@@ -20,12 +27,12 @@ const transactions = [
 ];
 
 const QUICK_ACTIONS = [
-  { icon: 'swap-horizontal-outline', label: 'Transfer', key: 'transfer' },
-  { icon: 'receipt-outline', label: 'Pay Bill', key: 'paybill' },
-  { icon: 'cellular-outline', label: 'Airtime', key: 'airtime' },
-  { icon: 'phone-portrait-outline', label: 'M-Transfer', key: 'mpesa' },
-  { icon: 'trending-up-outline', label: 'Loans', key: 'loans' },
-  { icon: 'pie-chart-outline', label: 'Shares', key: 'shares' },
+  { icon: 'swap-horizontal-outline', label: 'Transfer', key: 'transfer',onPress:() => setSendMoneySheet(true)},
+  { icon: 'receipt-outline', label: 'Pay Bill', key: 'paybill',onPress:() => setPayBillSheet(true)},
+  { icon: 'cellular-outline', label: 'Airtime', key: 'airtime',bottomSheet:'setAirtimeOptionsOpen(true)' },
+  { icon: 'phone-portrait-outline', label: 'M-Transfer', key: 'mpesa',bottomSheet:'setMoneyTransferSheet(true)' },
+  { icon: 'trending-up-outline', label: 'Loans', key: 'loans' ,bottomSheet:'setLoanOptionSheet(true)'},
+  { icon: 'pie-chart-outline', label: 'Shares', key: 'shares',bottomSheet:'setSharesSheetOpen(true)' },
 ];
 
 const ITEMS_PER_PAGE = 4;
@@ -34,6 +41,23 @@ const TOTAL_PAGES = Math.ceil(QUICK_ACTIONS.length / ITEMS_PER_PAGE);
 export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(0);
   const dotAnimation = useRef(new Animated.Value(0)).current;
+  const [drawerOpen,setDrawerOpen] = useState(false);
+  const [accountOptionsOpen,setAccountOptionsOpen] = useState(false);
+  const [airtimeOptionsOpen,setAirtimeOptionsOpen] = useState(false);
+  const [loanOptionSheet,setLoanOptionSheet] = useState(false);
+  const [moneyTransferSheet,setMoneyTransferSheet] = useState(false);
+  const [payBillSheet,setPayBillSheet] = useState(false);
+  const [sendMoneySheet,setSendMoneySheet] = useState(false);
+  const [sharesSheetOption,setSharesSheetOpen] = useState(false);
+  
+  const QUICK_ACTIONS = [
+  { icon: 'swap-horizontal-outline', label: 'Transfer', key: 'transfer',onPress:() => setSendMoneySheet(true)},
+  { icon: 'receipt-outline', label: 'Pay Bill', key: 'paybill',onPress:() => setPayBillSheet(true)},
+  { icon: 'cellular-outline', label: 'Airtime', key: 'airtime',onPress:() => setAirtimeOptionsOpen(true)},
+  { icon: 'phone-portrait-outline', label: 'M-Transfer', key: 'mpesa',onPress:() => setMoneyTransferSheet(true)},
+  { icon: 'trending-up-outline', label: 'Loans', key: 'loans' ,onPress:() => setLoanOptionSheet(true)},
+  { icon: 'pie-chart-outline', label: 'Shares', key: 'shares',onPress:() => setSharesSheetOpen(true)},
+];
 
   const goToPage = (page) => {
     if (page < 0 || page >= TOTAL_PAGES) return;
@@ -62,11 +86,13 @@ export default function Dashboard() {
       >
         {/* Navbar */}
         <View style={styles.navbar}>
-          <View style={styles.navLeft}>
-            <View style={styles.avatar}>
-              <Text style={styles.avatarText}>EM</Text>
-            </View>
+          <TouchableOpacity onPress={() => setDrawerOpen(true)}>
+            <View style={styles.navLeft}>
+               <View style={styles.avatar}>
+                 <Text style={styles.avatarText}>EM</Text>
+               </View>
           </View>
+          </TouchableOpacity>
           <View style={styles.navRight}>
             <TouchableOpacity style={styles.iconBtn}>
               <Ionicons name="qr-code-outline" size={22} color="forestgreen" />
@@ -91,7 +117,9 @@ export default function Dashboard() {
         </View>
 
         {/* Balance Card */}
-        <BankAccountCard />
+        <BankAccountCard 
+          onOptionsPress={() => setAccountOptionsOpen(true)}
+        />
 
         {/* Quick Actions */}
         <View style={styles.actionsContainer}>
@@ -111,7 +139,7 @@ export default function Dashboard() {
 
             <View style={styles.iconsRow}>
               {currentActions.map((action) => (
-                <TouchableOpacity key={action.key} style={styles.actionBtn}>
+                <TouchableOpacity key={action.key} style={styles.actionBtn} onPress={action.onPress}>
                   <View style={styles.actionIcon}>
                     <Ionicons name={action.icon} size={22} color="forestgreen" />
                   </View>
@@ -180,9 +208,44 @@ export default function Dashboard() {
             </View>
           ))}
         </View>
+        {/**handling external components */}
+        <ProfileDrawer
+          visible={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        />
+        <AccountOptionsSheet
+          visible={accountOptionsOpen}
+          onClose={() => setAccountOptionsOpen(false)}
+        />
+        <AirtimePurchaseSheet
+           visible={airtimeOptionsOpen}
+           onClose={() => setAirtimeOptionsOpen(false)}
+        />
+        <LoansOptionSheet
+           visible={loanOptionSheet}
+           onClose={() => setLoanOptionSheet(false)}
+        />
+        <MTransferSheet
+          visible={moneyTransferSheet}
+          onClose={() => setMoneyTransferSheet(false)}
+        />
+        <PayBillSheet
+          visible={payBillSheet}
+          onClose={() => setPayBillSheet(false)}
+        />
+        <SendMoneySheet
+          visible={sendMoneySheet}
+          onClose={() => setSendMoneySheet(false)}
+        />
+        <SharesManagementSheet
+          visible={sharesSheetOption}
+          onClose={() => setSharesSheetOpen(false)}
+        />
+
 
       </ScrollView>
     </View>
+    
   );
 }
 

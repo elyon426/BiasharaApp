@@ -4,7 +4,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('./download.png')}
+        source={require('../../assets/download.png')}
         style={styles.logo}
         resizeMode="contain"
       />

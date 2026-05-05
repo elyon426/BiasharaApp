@@ -9,7 +9,7 @@ export default function SignInScreen() {
       {/* Logo — top left corner */}
       <View style={styles.logoWrap}>
         <Image
-          source={require('./download.png')}
+          source={require('../../assets/download.png')}
           style={styles.logo}
           resizeMode="contain"
         />

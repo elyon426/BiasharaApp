@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 
-export default function PayWithMTowerSheet({ visible, onClose, onSelectOption }) {
+export default function PayBillSheet({ visible, onClose, onSelectOption }) {
   const options = [
     {
       icon: 'receipt-outline',

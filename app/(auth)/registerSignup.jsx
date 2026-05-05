@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import GradientBackground from './components/gradientWrapper';
-import ShimmerOverlay from './components/shimmer';
+import GradientBackground from '../../components/gradientWrapper';
+import ShimmerOverlay from '../../components/shimmer';
 
 export default function WelcomeScreen() {
   return (
@@ -11,7 +11,7 @@ export default function WelcomeScreen() {
       {/* Hero — logo + welcome text */}
       <View style={styles.heroSection}>
         <Image
-          source={require('./download.png')}
+          source={require('../../assets/download.png')}
           style={styles.logo}
           resizeMode="contain"
         />

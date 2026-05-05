@@ -1,14 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import {
-    Modal,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    View,
+  Modal,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 
-export default function SendMoneySheet({ visible, onClose, onSelectOption }) {
+export default function LoanOptionsSheet({ visible, onClose, onSelectOption }) {
   const options = [
     { icon: 'swap-horizontal-outline', label: 'Apply loan', desc: 'Apply for personal loan', value: 'apply_loan' },
     { icon: 'phone-portrait-outline', label: 'View all loans', desc: 'View all your existing loans', value: 'view_loans' },

@@ -2,18 +2,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Import components
-import AccountSummaryCard from '../components/AccountSummaryCard';
-import BankAccountCard from '../components/BankAccountCard';
-import LoanAccountCard from '../components/LoanAccountCard';
+import AccountSummaryCard from './accountSummaryCard';
+import BankAccountCard from './bankAccountCard';
+import LoanAccountCard from './loanAccountCard';
 
 export default function AccountsScreen() {
   const navigation = useNavigation();
