@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import GradientBackground from '../../components/gradientWrapper';
 import ShimmerOverlay from '../../components/shimmer';
-
 export default function WelcomeScreen() {
+  const router = useRouter();
   return (
     <GradientBackground>
       <ShimmerOverlay />
@@ -24,12 +25,12 @@ export default function WelcomeScreen() {
       {/* Stacked buttons — Register first, Sign In below */}
       <View style={styles.buttonStack}>
 
-        <TouchableOpacity style={styles.btnSolid} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.btnSolid} activeOpacity={0.8} onPress={() => router.replace('/(auth)/register')}>
           <Ionicons name="person-add-outline" size={20} color="#2d6a2d" style={styles.btnIcon} />
           <Text style={styles.btnSolidText}>Register</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.btnOutline} activeOpacity={0.8}>
+        <TouchableOpacity style={styles.btnOutline} activeOpacity={0.8} onPress={() => router.replace('/(auth)/login')}>
           <Ionicons name="log-in-outline" size={20} color="#fff" style={styles.btnIcon} />
           <Text style={styles.btnOutlineText}>Sign In</Text>
         </TouchableOpacity>
