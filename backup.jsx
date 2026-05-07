@@ -8,43 +8,29 @@ const { width } = Dimensions.get('window');
 const TAB_COUNT = 5;
 const TAB_WIDTH = width / TAB_COUNT;
 const BAR_HEIGHT = 62;
+const NOTCH_DEPTH = 28;
+const NOTCH_WIDTH = 56;
 const FLOAT_SIZE = 52;
-const CENTER_INDEX = 2;
-
-// Notch sized to hug the circle tightly
-const NOTCH_RADIUS = FLOAT_SIZE / 2 + 6;  // circle radius + small gap
-const NOTCH_WIDTH  = NOTCH_RADIUS * 2;     // diameter of the notch opening
-const NOTCH_DEPTH  = NOTCH_RADIUS + 2;     // how deep it sinks
+const CENTER_INDEX = 2; // 0-based, index tab is slot 2
 
 function CurvedBackground() {
-  const cx = TAB_WIDTH * CENTER_INDEX + TAB_WIDTH / 2;
-  const R = NOTCH_RADIUS;
-  const left  = cx - R;
-  const right = cx + R;
+  const cx = TAB_WIDTH * CENTER_INDEX + TAB_WIDTH / 2; // dynamic center
+  const r = 12;
+  const nw = NOTCH_WIDTH;
+  const nd = NOTCH_DEPTH;
 
-  /*
-   * Strategy: draw two tangent quarter-circle arcs that wrap tightly
-   * around the floating button, meeting at the bottom of the notch.
-   *
-   * Entry tangent point  → (left,  0)
-   * Exit  tangent point  → (right, 0)
-   * Arc centres sit at   → (left,  R) and (right, R)
-   * The two arcs meet at → (cx,    R)   — bottom of the notch
-   *
-   * Using SVG arc: rx=R ry=R x-rotation=0 large-arc=0 sweep
-   * Left arc  sweeps clockwise  (sweep=1) from (left,0)  to (cx, R)
-   * Right arc sweeps counter-CW (sweep=0) from (cx,  R)  to (right,0)
-   */
-  const path = [
-    `M0,0`,
-    `L${left},0`,
-    `A${R},${R} 0 0,1 ${cx},${R}`,   // left concave arc
-    `A${R},${R} 0 0,1 ${right},0`,   // right concave arc
-    `L${width},0`,
-    `L${width},${BAR_HEIGHT}`,
-    `L0,${BAR_HEIGHT}`,
-    `Z`,
-  ].join(' ');
+  const path = `
+    M0,0
+    L${cx - nw / 2 - r},0
+    Q${cx - nw / 2},0 ${cx - nw / 2},${r}
+    C${cx - nw / 2 + 5},${nd - 2} ${cx - nw / 4},${nd} ${cx},${nd}
+    C${cx + nw / 4},${nd} ${cx + nw / 2 - 5},${nd - 2} ${cx + nw / 2},${r}
+    Q${cx + nw / 2},0 ${cx + nw / 2 + r},0
+    L${width},0
+    L${width},${BAR_HEIGHT}
+    L0,${BAR_HEIGHT}
+    Z
+  `;
 
   return (
     <Svg width={width} height={BAR_HEIGHT} style={StyleSheet.absoluteFill}>
@@ -85,6 +71,7 @@ export default function TabLayout() {
         tabBarLabelStyle: styles.tabLabel,
       }}
     >
+      {/* slot 0 — loansNaccounts  ← exact filename */}
       <Tabs.Screen
         name="loansNaccounts"
         options={{
@@ -99,6 +86,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* slot 1 — statistics */}
       <Tabs.Screen
         name="statistics"
         options={{
@@ -113,6 +101,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* slot 2 — index (floating center) */}
       <Tabs.Screen
         name="index"
         options={{
@@ -126,6 +115,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* slot 3 — scan */}
       <Tabs.Screen
         name="scan"
         options={{
@@ -140,6 +130,7 @@ export default function TabLayout() {
         }}
       />
 
+      {/* slot 4 — settings → shown as Profile */}
       <Tabs.Screen
         name="settings"
         options={{
@@ -153,6 +144,7 @@ export default function TabLayout() {
           ),
         }}
       />
+
     </Tabs>
   );
 }

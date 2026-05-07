@@ -15,7 +15,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.replace('/(auth)/registerSignup');
-    }, 10000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 

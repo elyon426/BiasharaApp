@@ -1,24 +1,24 @@
 {
   "expo": {
-    "name": "BiasharaApp",
+    "name": "Biashara Sacco Society",
     "slug": "BiasharaApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/download.png",
     "scheme": "biasharaapp",
-    
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/download.png",
+      "bundleIdentifier": "com.biashara.app"
     },
-    //for app launch
     "android": {
+      "package": "com.biashara.app",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#FFFFFF",
-        "foregroundImage": "./assets/download.png", //app icon design
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "foregroundImage": "./assets/download.png",
+        "backgroundColor": "#2d6a2d"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -32,12 +32,13 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/download.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "backgroundColor": "#000000"
+            "image": "./assets/download.png",
+            "backgroundColor": "#1a1a1a"
           }
         }
       ]

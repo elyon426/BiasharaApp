@@ -1,13 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 const SETTINGS_SECTIONS = [
   {
     title: 'Account',
@@ -46,8 +46,9 @@ const SETTINGS_SECTIONS = [
 ];
 
 export default function ProfileSettings() {
+  const router = useRouter();
   const handleBackPress = () => {
-    console.log('Back button pressed - navigation will be added later');
+    router.replace('/(tabs)');
   };
 
   return (

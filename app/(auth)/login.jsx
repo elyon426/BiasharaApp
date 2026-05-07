@@ -1,8 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { Image, Platform, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-
 export default function SignInScreen() {
+  const router = useRouter();
+  const handleSubmit = () => {
+    router.replace('/(tabs)');
+  }
   return (
     <View style={styles.container}>
 
@@ -83,7 +87,7 @@ export default function SignInScreen() {
         </TouchableOpacity>
 
         {/* Let me in — gradient fill */}
-        <TouchableOpacity activeOpacity={0.85}>
+        <TouchableOpacity activeOpacity={0.85} onPress={handleSubmit}>
           <LinearGradient
             colors={['forestgreen', 'limegreen', 'yellowgreen', 'yellow']}
             start={{ x: 0, y: 0 }}

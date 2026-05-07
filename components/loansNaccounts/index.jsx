@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   ScrollView,
@@ -9,17 +10,16 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-
 // Import components
 import AccountSummaryCard from './accountSummaryCard';
 import BankAccountCard from './bankAccountCard';
 import LoanAccountCard from './loanAccountCard';
 
 export default function AccountsScreen() {
-  const navigation = useNavigation();
+  
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('accounts'); // 'accounts' or 'loans'
-
+  const router = useRouter();
   // Sample accounts data
   const accounts = [
     {
@@ -132,7 +132,7 @@ export default function AccountsScreen() {
       <View style={styles.header}>
         <TouchableOpacity 
           style={styles.backButton} 
-          onPress={() => navigation.goBack()}
+          onPress={() => router.replace('/(tabs)')}
         >
           <Ionicons name="chevron-back" size={24} color="#1a5f1a" />
         </TouchableOpacity>

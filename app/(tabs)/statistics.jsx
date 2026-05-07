@@ -1,20 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
-
 export default function StatisticsScreen({ navigation }) {
   const [selectedPeriod, setSelectedPeriod] = useState('weekly');
-
+  const router = useRouter();
+  const handleBack = () => {
+    router.replace('/(tabs)');
+  }
   const chartData = {
     weekly: [
       { label: 'Mon', income: 4500, expense: 3200 },
@@ -101,7 +103,7 @@ export default function StatisticsScreen({ navigation }) {
         <View style={styles.header}>
           <TouchableOpacity
             style={styles.backBtn}
-            onPress={() => navigation?.goBack()}
+            onPress={handleBack}
             activeOpacity={0.7}
           >
             <Ionicons name="chevron-back" size={22} color="forestgreen" />
@@ -303,10 +305,10 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#f5f5f9',
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 44,
+    
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 90,
   },
 
   // Header

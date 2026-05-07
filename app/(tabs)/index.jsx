@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import {
   Animated,
@@ -49,6 +50,13 @@ export default function Dashboard() {
   const [payBillSheet,setPayBillSheet] = useState(false);
   const [sendMoneySheet,setSendMoneySheet] = useState(false);
   const [sharesSheetOption,setSharesSheetOpen] = useState(false);
+
+  const router = useRouter();
+
+  const goToScanURLScreen = (page) => {
+    router.replace('/(tabs)/scan'); 
+
+  }
   
   const QUICK_ACTIONS = [
   { icon: 'swap-horizontal-outline', label: 'Transfer', key: 'transfer',onPress:() => setSendMoneySheet(true)},
@@ -94,7 +102,7 @@ export default function Dashboard() {
           </View>
           </TouchableOpacity>
           <View style={styles.navRight}>
-            <TouchableOpacity style={styles.iconBtn}>
+            <TouchableOpacity style={styles.iconBtn} onPress={() => goToScanURLScreen()}>
               <Ionicons name="qr-code-outline" size={22} color="forestgreen" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.iconBtn}>
