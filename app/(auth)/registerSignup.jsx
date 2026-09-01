@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   // Stacked buttons, clear of Android nav bar
   buttonStack: {
     paddingHorizontal: 28,
-    paddingBottom: 52,
+    paddingBottom: 58, //adding 6 units of space from the previous 52
     gap: 14,
   },
   btnSolid: {

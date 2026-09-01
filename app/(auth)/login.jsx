@@ -1,12 +1,112 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as LocalAuthentication from 'expo-local-authentication';
 import { useRouter } from 'expo-router';
-import { Image, Platform, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Image, Linking, Platform, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+
+const MAX_ATTEMPTS = 3;
+
 export default function SignInScreen() {
   const router = useRouter();
+
+  // ---- biometric state ----
+  const [hasHardware, setHasHardware] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [biometricIcon, setBiometricIcon] = useState<'finger-print-outline' | 'scan-outline'>('finger-print-outline');
+  const [attempts, setAttempts] = useState(0);
+
+  useEffect(() => {
+    checkBiometricSupport();
+  }, []);
+
+  // 1 & 2: check hardware support + decide which icon to show
+  const checkBiometricSupport = async () => {
+    const compatible = await LocalAuthentication.hasHardwareAsync();
+    setHasHardware(compatible);
+
+    if (!compatible) return; // no hardware -> button won't render at all
+
+    const enrolled = await LocalAuthentication.isEnrolledAsync();
+    setIsEnrolled(enrolled);
+
+    const supportedTypes = await LocalAuthentication.supportedAuthenticationTypesAsync();
+    const hasFaceId =
+      Platform.OS === 'ios' &&
+      supportedTypes.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION);
+
+    setBiometricIcon(hasFaceId ? 'scan-outline' : 'finger-print-outline');
+  };
+
+  // 3: not enrolled -> tell user to go enable it in Settings
+  const promptEnrollment = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Biometrics not set up',
+      text2: 'Enable Face ID / Fingerprint in your device settings first.',
+      onPress: () => Linking.openSettings(),
+    });
+  };
+
+  // 4 & 5: authenticate, fall back to passcode after repeated failures, redirect on success
+  const handleBiometricAuth = async () => {
+    if (!hasHardware) return;
+
+    if (!isEnrolled) {
+      promptEnrollment();
+      return;
+    }
+
+    if (attempts >= MAX_ATTEMPTS) {
+      Toast.show({
+        type: 'info',
+        text1: 'Too many failed attempts',
+        text2: 'Please use your device passcode instead.',
+      });
+    }
+
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: biometricIcon === 'scan-outline' ? 'Sign in with Face ID' : 'Sign in with fingerprint',
+      fallbackLabel: 'Use passcode', // iOS only: label for the OS-provided fallback button
+      disableDeviceFallback: false,  // false = let the OS fall back to passcode/PIN natively after failures
+      cancelLabel: 'Cancel',
+    });
+
+    if (result.success) {
+      setAttempts(0);
+      Toast.show({ type: 'success', text1: 'Welcome back!' });
+      router.replace('/(tabs)');
+      return;
+    }
+
+    // result.error can be: 'user_cancel', 'system_cancel', 'lockout', 'not_enrolled', 'authentication_failed', etc.
+    if (result.error === 'lockout') {
+      Toast.show({
+        type: 'error',
+        text1: 'Biometrics locked',
+        text2: 'Too many attempts. Try again later or use your passcode.',
+      });
+      return;
+    }
+
+    if (result.error === 'user_cancel' || result.error === 'system_cancel') {
+      // user backed out — don't count this as a failed attempt
+      return;
+    }
+
+    setAttempts((prev) => prev + 1);
+    Toast.show({
+      type: 'error',
+      text1: 'Authentication failed',
+      text2: `Attempt ${attempts + 1} of ${MAX_ATTEMPTS}`,
+    });
+  };
+
   const handleSubmit = () => {
     router.replace('/(tabs)');
-  }
+  };
+
   return (
     <View style={styles.container}>
 
@@ -71,20 +171,24 @@ export default function SignInScreen() {
       {/* Buttons */}
       <View style={styles.buttonStack}>
 
-        {/* Fingerprint button — white bg, gradient border */}
-        <TouchableOpacity activeOpacity={0.85} style={styles.fingerprintOuter}>
-          <LinearGradient
-            colors={['forestgreen', 'limegreen', 'yellowgreen', 'yellow']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.fingerprintGradientBorder}
-          >
-            <View style={styles.fingerprintInner}>
-              <Ionicons name="finger-print-outline" size={28} color="forestgreen" />
-              <Text style={styles.fingerprintText}>Use biometrics</Text>
-            </View>
-          </LinearGradient>
-        </TouchableOpacity>
+        {/* Fingerprint / Face ID button — only rendered if hardware exists */}
+        {hasHardware && (
+          <TouchableOpacity activeOpacity={0.85} style={styles.fingerprintOuter} onPress={handleBiometricAuth}>
+            <LinearGradient
+              colors={['forestgreen', 'limegreen', 'yellowgreen', 'yellow']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.fingerprintGradientBorder}
+            >
+              <View style={styles.fingerprintInner}>
+                <Ionicons name={biometricIcon} size={28} color="forestgreen" />
+                <Text style={styles.fingerprintText}>
+                  {biometricIcon === 'scan-outline' ? 'Use Face ID' : 'Use fingerprint'}
+                </Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        )}
 
         {/* Let me in — gradient fill */}
         <TouchableOpacity activeOpacity={0.85} onPress={handleSubmit}>
@@ -100,6 +204,8 @@ export default function SignInScreen() {
         </TouchableOpacity>
 
       </View>
+
+      <Toast />
 
     </View>
   );
@@ -174,7 +280,7 @@ const styles = StyleSheet.create({
   },
   buttonStack: {
     paddingHorizontal: 28,
-    paddingBottom: 52,
+    paddingBottom: 58, //STYLING THE BUTTON CONTAINER TO BE CLEAR OF THE ANDROID NAV BAR    
     gap: 14,
   },
   fingerprintOuter: {

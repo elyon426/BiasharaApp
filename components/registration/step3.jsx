@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   buttonStack: {
     paddingHorizontal: 28,
-    paddingBottom: 65,
+    paddingBottom: 58,
     gap: 16,
   },
   checkRow: {

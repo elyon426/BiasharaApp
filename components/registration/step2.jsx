@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   buttonStack: {
     paddingHorizontal: 28,
-    paddingBottom: 52,
+    paddingBottom: 58,
   },
   btnGradient: {
     flexDirection: 'row',

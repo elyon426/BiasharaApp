@@ -1,7 +1,9 @@
 // app/(tabs)/_layout.jsx
+// app/(tabs)/_layout.jsx
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { Dimensions, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
 const { width } = Dimensions.get('window');
@@ -10,44 +12,27 @@ const TAB_WIDTH = width / TAB_COUNT;
 const BAR_HEIGHT = 62;
 const FLOAT_SIZE = 52;
 const CENTER_INDEX = 2;
+const NOTCH_RADIUS = FLOAT_SIZE / 2 + 6;
 
-// Notch sized to hug the circle tightly
-const NOTCH_RADIUS = FLOAT_SIZE / 2 + 6;  // circle radius + small gap
-const NOTCH_WIDTH  = NOTCH_RADIUS * 2;     // diameter of the notch opening
-const NOTCH_DEPTH  = NOTCH_RADIUS + 2;     // how deep it sinks
-
-function CurvedBackground() {
+function CurvedBackground({ totalHeight }) {
   const cx = TAB_WIDTH * CENTER_INDEX + TAB_WIDTH / 2;
   const R = NOTCH_RADIUS;
-  const left  = cx - R;
+  const left = cx - R;
   const right = cx + R;
 
-  /*
-   * Strategy: draw two tangent quarter-circle arcs that wrap tightly
-   * around the floating button, meeting at the bottom of the notch.
-   *
-   * Entry tangent point  → (left,  0)
-   * Exit  tangent point  → (right, 0)
-   * Arc centres sit at   → (left,  R) and (right, R)
-   * The two arcs meet at → (cx,    R)   — bottom of the notch
-   *
-   * Using SVG arc: rx=R ry=R x-rotation=0 large-arc=0 sweep
-   * Left arc  sweeps clockwise  (sweep=1) from (left,0)  to (cx, R)
-   * Right arc sweeps counter-CW (sweep=0) from (cx,  R)  to (right,0)
-   */
   const path = [
     `M0,0`,
     `L${left},0`,
-    `A${R},${R} 0 0,1 ${cx},${R}`,   // left concave arc
-    `A${R},${R} 0 0,1 ${right},0`,   // right concave arc
+    `A${R},${R} 0 0,1 ${cx},${R}`,
+    `A${R},${R} 0 0,1 ${right},0`,
     `L${width},0`,
-    `L${width},${BAR_HEIGHT}`,
-    `L0,${BAR_HEIGHT}`,
+    `L${width},${totalHeight}`,
+    `L0,${totalHeight}`,
     `Z`,
   ].join(' ');
 
   return (
-    <Svg width={width} height={BAR_HEIGHT} style={StyleSheet.absoluteFill}>
+    <Svg width={width} height={totalHeight} style={StyleSheet.absoluteFill}>
       <Path d={path} fill="#ffffff" />
     </Svg>
   );
@@ -72,6 +57,12 @@ function FloatingHomeButton({ onPress, focused }) {
 }
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+
+  // ✅ Only use bottom inset — accounts for Android nav bar
+  const bottomInset = insets.bottom;
+  const totalBarHeight = BAR_HEIGHT + bottomInset;
+
   return (
     <Tabs
       screenOptions={{
@@ -79,9 +70,23 @@ export default function TabLayout() {
         tabBarShowLabel: true,
         tabBarActiveTintColor: '#0da134',
         tabBarInactiveTintColor: '#9CA3AF',
-        tabBarStyle: styles.tabBar,
-        tabBarBackground: () => <CurvedBackground />,
-        tabBarItemStyle: styles.tabItem,
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: totalBarHeight,
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        tabBarBackground: () => <CurvedBackground totalHeight={totalBarHeight} />,
+        tabBarItemStyle: {
+          height: BAR_HEIGHT,      // ✅ icons only use BAR_HEIGHT, not the inset area
+          paddingBottom: Platform.OS === 'android' ? 6 : 4,
+          paddingTop: 6,
+        },
         tabBarLabelStyle: styles.tabLabel,
       }}
     >
@@ -158,22 +163,6 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: BAR_HEIGHT + (Platform.OS === 'ios' ? 16 : 0),
-    backgroundColor: 'transparent',
-    borderTopWidth: 0,
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  tabItem: {
-    height: BAR_HEIGHT,
-    paddingBottom: Platform.OS === 'android' ? 6 : 4,
-    paddingTop: 6,
-  },
   tabLabel: {
     fontSize: 10,
     fontWeight: '600',
@@ -182,7 +171,7 @@ const styles = StyleSheet.create({
     width: TAB_WIDTH,
     height: BAR_HEIGHT,
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'flex-start',  // ✅ no top: -28 hack
   },
   floatCircle: {
     width: FLOAT_SIZE,
@@ -193,7 +182,7 @@ const styles = StyleSheet.create({
     borderColor: '#0da134',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -(FLOAT_SIZE / 2 + 4),
+    marginTop: -(FLOAT_SIZE / 2 + 4),  // ✅ rises above bar cleanly
     elevation: 6,
     shadowColor: '#0da134',
     shadowOffset: { width: 0, height: 3 },
