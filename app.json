@@ -4,7 +4,7 @@
     "slug": "BiasharaApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/download.png",
+    "icon": "./assets/stimaLogo.png",
     "scheme": "biasharaapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -19,7 +19,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/download.png",
+      "icon": "./assets/stimaLogo.png",
       "bundleIdentifier": "com.biashara.app"
     },
     "android": {
@@ -47,7 +47,7 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
           "dark": {
-            "image": "./assets/download.png",
+            "image": "./assets/stimaLogo.png",
             "backgroundColor": "#1a1a1a"
           }
         }

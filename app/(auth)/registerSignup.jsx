@@ -12,7 +12,7 @@ export default function WelcomeScreen() {
       {/* Hero — logo + welcome text */}
       <View style={styles.heroSection}>
         <Image
-          source={require('../../assets/download.png')}
+          source={require('../../assets/stimaLogo.png')}
           style={styles.logo}
           resizeMode="contain"
         />
